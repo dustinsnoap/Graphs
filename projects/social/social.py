@@ -13,6 +13,7 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
+        self.count = 0
 
     def add_friendship(self, user_id, friend_id):
         if user_id == friend_id:
@@ -22,6 +23,7 @@ class SocialGraph:
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            self.count += 1
 
     def add_user(self, name):
         self.last_id += 1  # automatically increment the ID to assign the new user
@@ -68,7 +70,7 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
+    sg.populate_graph(10, 3)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
