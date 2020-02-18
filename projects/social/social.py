@@ -1,3 +1,9 @@
+from random import randrange, shuffle
+import math
+import sys
+sys.path.insert(0, '../graph')
+from util import Queue
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -9,9 +15,6 @@ class SocialGraph:
         self.friendships = {}
 
     def add_friendship(self, user_id, friend_id):
-        """
-        Creates a bi-directional friendship
-        """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
@@ -21,46 +24,47 @@ class SocialGraph:
             self.friendships[friend_id].add(user_id)
 
     def add_user(self, name):
-        """
-        Create a new user with a sequential integer ID
-        """
         self.last_id += 1  # automatically increment the ID to assign the new user
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
     def populate_graph(self, num_users, avg_friendships):
-        """
-        Takes a number of users and an average number of friendships
-        as arguments
-
-        Creates that number of users and a randomly distributed friendships
-        between those users.
-
-        The number of users must be greater than the average number of friendships.
-        """
         # Reset graph
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
+        for n in range(num_users):
+            self.add_user(n)
 
         # Create friendships
+        total_friends = 0
+        max_friends = num_users * avg_friendships
+        while total_friends < max_friends:
+            user = randrange(1, num_users + 1)
+            friend = randrange(1, num_users + 1)
+
+            #update friend until a unique friend is found
+            while user == friend or friend in self.friendships[user]:
+                friend = randrange(1, num_users + 1)
+            self.add_friendship(user, friend)
+            total_friends += 2
 
     def get_all_social_paths(self, user_id):
-        """
-        Takes a user's user_id as an argument
-
-        Returns a dictionary containing every user in that user's
-        extended network with the shortest friendship path between them.
-
-        The key is the friend's ID and the value is the path.
-        """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+        queue = Queue()
+        queue.enqueue({'id': user_id, 'path': [user_id]})
 
+        while queue.size() > 0:
+            user = queue.dequeue()
+            visited[user['id']] = user['path']
+            for friend in self.friendships[user['id']]:
+                if friend not in visited:
+                    visited[friend] = user['path'] + [friend]
+                    queue.enqueue({'id': friend, 'path': visited[friend]})
+
+        return visited
 
 if __name__ == '__main__':
     sg = SocialGraph()
