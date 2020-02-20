@@ -31,13 +31,13 @@ def create_path(starting_room):
     opposite = {'n': 's', 'e': 'w', 's': 'n', 'w': 'e'}
     def add_to_path(room, back=None):
         visited.add(room)
-        if len(visited) >= 500: return
         exits = room.get_exits()
         for direction in exits:
             if room.get_room_in_direction(direction) not in visited:
                 path.append(direction)
                 add_to_path(room.get_room_in_direction(direction), opposite[direction])
-        if back: path.append(back)
+        if len(visited) == len(world.rooms): return
+        elif back: path.append(back)
     add_to_path(starting_room)
     return path
 
@@ -46,7 +46,9 @@ def create_path(starting_room):
 # print(map)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = create_path(world.starting_room)
+path = create_path(world.starting_room)
+# for p in path: print(p)
+traversal_path = path
 
 # TRAVERSAL TEST
 visited_rooms = set()
